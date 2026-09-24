@@ -25,3 +25,13 @@ Dokumen ini mencatat keputusan penting, asumsi, dan pemilihan dependensi untuk s
   - Warna primer Tailwind disetel ke Teal (`#0F766E` / hover `#115E59`).
   - Target sentuh minimal 48px (`min-h-[48px]`), teks input minimal 16px (mencegah zoom otomatis pada perangkat mobile Android).
   - Navigasi responsif: Bottom Navigation 64px di mobile (<1024px) dengan tombol Scan tengah menonjol, dan Sidebar navigasi tetap di desktop (≥1024px).
+
+## 4. Skema Kolom & Layanan Kalkulator (Fase 2)
+- **Konteks**: Sesuai `02_DATABASE.md` dan `04_AGENT_RULES.md`, kolom database berulang tidak boleh didefinisikan secara redundan di banyak tempat, dan rumus turunan harus berada di satu layanan backend teruji.
+- **Keputusan**:
+  - Dibuat `app/Support/LansiaFields.php` sebagai Single Source of Truth untuk seluruh kolom sasaran, kunjungan (24 kolom), kemandirian (6 kolom), kelainan (28 kolom), tindakan, dan section OCR.
+  - Migrasi `kunjungan_rows` dan `layanan_rows` dibangun menggunakan loop foreach dari `LansiaFields`.
+  - Model `KunjunganRow` dan `LayananRow` mengisi properti `$fillable` secara dinamis dari `LansiaFields`.
+  - Seluruh rumus turunan dan uji emas resmi diimplementasikan di `app/Services/LansiaCalculator.php`.
+  - Persentase baris JUMLAH dihitung ulang dari `spm_total_jumlah / total_lansia_60_jumlah * 100`, bukan rata-rata persentase per kelurahan.
+  - Penanganan pembagi nol (`total_lansia_60 = 0`) menghasilkan 0.0% tanpa memicu galat PHP division by zero.
