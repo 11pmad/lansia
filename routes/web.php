@@ -40,10 +40,13 @@ Route::middleware(['auth'])->group(function () {
     // Rekapitulasi Laporan
     Route::get('/laporan/{report}/rekap', [RecapController::class, 'show'])->name('reports.recap');
 
-    // Scan
-    Route::get('/scan', function () {
-        return Inertia::render('Scan/Create');
-    })->name('scan.create');
+    // Fitur OCR / Pindai Formulir Tulisan Tangan
+    Route::get('/scan', [App\Http\Controllers\OcrController::class, 'create'])->name('scan.create');
+    Route::post('/scan', [App\Http\Controllers\OcrController::class, 'store'])->name('scan.store');
+    Route::get('/scan/{ocrUpload}', [App\Http\Controllers\OcrController::class, 'show'])->name('scan.show');
+    Route::get('/scan/{ocrUpload}/image', [App\Http\Controllers\OcrController::class, 'image'])->name('scan.image');
+    Route::get('/scan/{ocrUpload}/status', [App\Http\Controllers\OcrController::class, 'status'])->name('scan.status');
+    Route::post('/scan/{ocrUpload}/apply', [App\Http\Controllers\OcrController::class, 'apply'])->name('scan.apply');
 
     // Statistik & Tren
     Route::get('/statistik', [StatistikController::class, 'index'])->name('stats.index');

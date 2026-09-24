@@ -1,0 +1,26 @@
+{
+  "section": "layanan_sasaran_kelainan",
+  "image": "layanan_sasaran_kelainan_sample1.png",
+  "expected_rows": [
+    {
+      "row_index": 1,
+      "kelurahan_name": "PAYOLANSEK",
+      "fields": {
+        "sas_a4559_l": 200,
+        "sas_a4559_p": 243,
+        "sas_a6069_l": 180,
+        "sas_a6069_p": 209,
+        "sas_a70_l": 110,
+        "sas_a70_p": 117,
+        "kel_td_tinggi_l": 18,
+        "kel_td_tinggi_p": 24,
+        "kel_dm_l": 8,
+        "kel_dm_p": 14,
+        "kel_asam_urat_l": 12,
+        "kel_asam_urat_p": 19,
+        "kel_kolesterol_l": 9,
+        "kel_kolesterol_p": 16
+      }
+    }
+  ]
+}
