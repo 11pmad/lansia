@@ -35,3 +35,34 @@ Dokumen ini mencatat keputusan penting, asumsi, dan pemilihan dependensi untuk s
   - Seluruh rumus turunan dan uji emas resmi diimplementasikan di `app/Services/LansiaCalculator.php`.
   - Persentase baris JUMLAH dihitung ulang dari `spm_total_jumlah / total_lansia_60_jumlah * 100`, bukan rata-rata persentase per kelurahan.
   - Penanganan pembagi nol (`total_lansia_60 = 0`) menghasilkan 0.0% tanpa memicu galat PHP division by zero.
+
+## 5. Alur Form & Penguncian Laporan (Fase 3)
+- **Konteks**: Pelaporan dilakukan per bulan untuk 6 kelurahan, dengan alur draft autosave, verifikasi anomali data, dan penguncian final.
+- **Keputusan**:
+  - `MonthlyReport` memiliki status `draft` dan `final`. Finalisasi mengunci seluruh form edit (`forms.kunjungan.edit` dan `forms.layanan.edit`).
+  - Pembuatan laporan bulan baru otomatis menyalin sasaran lansia dan posyandu/kader dari bulan sebelumnya.
+  - Tab 6 kelurahan di form input menampilkan indikator status isi real-time.
+  - Validasi kewajaran mendeteksi kelainan tanpa kunjungan, atau kunjungan melampaui sasaran sebagai catatan peringatan (warning) tanpa memblokir finalisasi.
+  - Buka kunci (reopen) hanya diizinkan untuk peran `admin` via Policy `MonthlyReportPolicy`.
+
+## 6. Statistik & Visualisasi Recharts (Fase 4)
+- **Konteks**: Grafik tren kunjungan dan capaian SPM tahunan harus akurat, bebas galat visual ketika ada bulan kosong, dan mencerminkan angka uji emas.
+- **Keputusan**:
+  - Dibuat `app/Services/StatistikService.php` untuk mengagregasi 12 bulan secara konsisten.
+  - Bulan yang belum ada datanya dikembalikan sebagai `null` (bukan `0`), sehingga Recharts merender visual gap alami via `connectNulls={false}` tanpa grafik jatuh ke angka 0.
+  - Grafik capaian SPM menyajikan target garis SPM Dinkes (100%) dan bar bulanan (L/P dan Capaian %).
+
+## 7. Ekspor Excel Format Baku Dinkes (Fase 5)
+- **Konteks**: Laporan resmi Dinkes Kota Payakumbuh menggunakan template multi-sheet (`Lap. Kunjungan` dan `Lap. Layanan Lansia`) dengan rumus bawaan Dinkes yang kompleks.
+- **Keputusan**:
+  - Template `storage/app/templates/laporan_lansia_template.xlsx` dimuat menggunakan PhpSpreadsheet, sheet coretan `Sheet1` dihapus otomatis pada berkas hasil ekspor.
+  - Seluruh rumus bawaan Excel (kolom N, AN–AY, AZ–BK, BL–BO pada Kunjungan; kolom I, AL–AN pada Layanan) tidak pernah ditimpa dan dibiarkan aktif.
+  - Hanya sel input yang ditulis. Nilai `null` dibiarkan kosong (bukan angka 0) agar formula Excel tidak terdistorsi.
+  - Seluruh sel input bawaan template yang mengandung data sisa draf tahun sebelumnya dibersihkan saat penyiapan template.
+  - 5 perbaikan template resmi Dinkes diterapkan:
+    1. Label bulan Agustus (C159) diperbaiki menjadi `: AGUSTUS`.
+    2. Header baris 1 disesuaikan secara dinamis dengan tahun yang diekspor (`TA. {$year}`).
+    3. Nomor urut kelurahan ke-6 (TALANG) disetel konsisten menjadi 6 (bukan 5) di seluruh 12 blok.
+    4. Rumus kolom AM pada Sheet Layanan disesuaikan agar hanya menjumlahkan kolom kelainan perempuan.
+    5. Teks draf bebas pada footer dibersihkan dan diganti rumus dinamis serta tanggal unduh terkini.
+  - Berkas ditulis dengan `setPreCalculateFormulas(false)` agar Excel mengevaluasi rumus secara alami saat berkas dibuka oleh pengguna, menjamin kompatibilitas penuh dengan Microsoft Excel dan WPS Office.

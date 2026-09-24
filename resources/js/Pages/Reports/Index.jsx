@@ -41,6 +41,18 @@ export default function ReportsIndex({ selectedYear, availableYears, monthsData 
                     </div>
 
                     <div className="flex items-center gap-2">
+                        <Link
+                            href={route('export.index', { year })}
+                            className="inline-flex min-h-[44px] items-center gap-2 rounded-lg border border-teal-600 bg-teal-50 px-3.5 py-2 text-sm font-bold text-teal-700 hover:bg-teal-100 transition"
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                            Ekspor Excel
+                        </Link>
+
                         <label htmlFor="year-select" className="text-sm font-semibold text-slate-700">
                             Tahun:
                         </label>

@@ -1,10 +1,13 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\KunjunganFormController;
 use App\Http\Controllers\LayananFormController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecapController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\StatistikController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -18,9 +21,7 @@ Route::get('/', function () {
 
 // Authenticated user routes (petugas & admin)
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Laporan Bulanan
     Route::get('/laporan', [ReportController::class, 'index'])->name('reports.index');
@@ -39,14 +40,17 @@ Route::middleware(['auth'])->group(function () {
     // Rekapitulasi Laporan
     Route::get('/laporan/{report}/rekap', [RecapController::class, 'show'])->name('reports.recap');
 
-    // Placeholder Scan & Statistik
+    // Scan
     Route::get('/scan', function () {
         return Inertia::render('Scan/Create');
     })->name('scan.create');
 
-    Route::get('/statistik', function () {
-        return Inertia::render('Statistik');
-    })->name('stats.index');
+    // Statistik & Tren
+    Route::get('/statistik', [StatistikController::class, 'index'])->name('stats.index');
+
+    // Ekspor Excel (Format Resmi Dinkes TA 2026)
+    Route::get('/ekspor', [ExportController::class, 'index'])->name('export.index');
+    Route::get('/ekspor/download', [ExportController::class, 'download'])->name('export.download');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
