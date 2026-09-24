@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+docker run --rm -i --net=host -u 1000:1000 -v "$(pwd)/.composer:/composer" -e COMPOSER_HOME=/composer -v "$(pwd):/var/www/html" -w /var/www/html sipela-app:latest composer "$@"

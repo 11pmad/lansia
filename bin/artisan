@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+if docker ps --format '{{.Names}}' | grep -q "^sipela-app$"; then
+    docker exec -i -u 1000:1000 sipela-app php artisan "$@"
+else
+    docker run --rm -i -u 1000:1000 --network lansia_sipela-network -v "$(pwd):/var/www/html" -w /var/www/html sipela-app:latest php artisan "$@"
+fi
